@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import './register.css';
-function Login() {
+interface LoginProps {
+  onLogin: () => void;
+}
+function Login({ onLogin }: LoginProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [result, setResult] = useState('');
   const API_URL = 'http://localhost:3000'
+  
 
   const handleLogin = async (user: string, pass: string) => {
     if (!user || !pass) {
@@ -28,6 +32,7 @@ function Login() {
         setResult(data.error || 'Ошибка регистрации');
       } else {
         setResult('User successfully registered!');
+        onLogin();
       }
     } catch (error) {
       setResult('Ошибка соединения с сервером');

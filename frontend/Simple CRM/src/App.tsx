@@ -1,122 +1,246 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
-
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+import { useEffect, useState } from "react";
+import "./App.css";
+import Login from "./login";
+interface Client {
+  id: number;
+  name: string;
+  company: string;
+  email: string;
 }
 
-export default App
+function App() {
+  const [clients, setClients] = useState<Client[]>(() => {
+    const saved = localStorage.getItem("clients");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const [name, setName] = useState("");
+  const [company, setCompany] = useState("");
+  const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    localStorage.setItem("clients", JSON.stringify(clients));
+  }, [clients]);
+  if (!isLoggedIn) {
+    return <Login onLogin={() => setIsLoggedIn(true)} />;
+  }
+  function addClient(e: React.FormEvent) {
+    e.preventDefault();
+
+    const newClient: Client = {
+      id: Date.now(),
+      name,
+      company,
+      email,
+    };
+
+    setClients([...clients, newClient]);
+
+    setName("");
+    setCompany("");
+    setEmail("");
+
+    setIsOpen(false);
+  }
+
+  return (
+    <div className="app">
+
+      {/* SIDEBAR */}
+      <aside className="sidebar">
+        <h2 className="logo">
+          <span>N</span> nexus
+        </h2>
+
+        <div className="workspace">
+          Nexus workspace
+          <small>Personal workspace</small>
+        </div>
+
+        <p className="menu-title">WORKSPACE</p>
+
+        <nav>
+          <div className="nav-item active">▦ Dashboard</div>
+          <div className="nav-item">♧ Clients</div>
+          <div className="nav-item">▣ Settings</div>
+        </nav>
+
+        <div className="profile">
+          <div className="avatar">A</div>
+          <div>
+            Alex Morgan
+            <small>Workspace admin</small>
+          </div>
+        </div>
+      </aside>
+
+      {/* MAIN */}
+      <main className="main">
+
+        <header className="header">
+          <span>Workspace / Dashboard</span>
+          <div className="user">Alex Morgan</div>
+        </header>
+        <button
+          className="logout-button"
+          onClick={() => {
+            setIsLoggedIn(false);
+            localStorage.removeItem("token");
+          }}
+        >
+          Logout
+        </button>
+
+        <section className="content">
+
+          <div className="welcome">
+            <div>
+              <h1>Good morning, Alex</h1>
+              <p>Here's what's happening with your business today.</p>
+            </div>
+
+            <button
+              className="add-button"
+              onClick={() => setIsOpen(true)}
+            >
+              + Add Client
+            </button>
+          </div>
+
+          {/* STATISTICS */}
+          <div className="stats">
+
+            <div className="stat-card">
+              <p>Total Clients</p>
+              <h2>{clients.length}</h2>
+            </div>
+
+            <div className="stat-card">
+              <p>Active Clients</p>
+              <h2>{clients.length}</h2>
+            </div>
+
+          </div>
+
+          {/* CLIENTS */}
+          <div className="clients-section">
+
+            <div className="section-header">
+              <div>
+                <h2>My Clients</h2>
+                <p>Your latest client relationships.</p>
+              </div>
+
+              <span>{clients.length} clients</span>
+            </div>
+
+            {clients.length === 0 ? (
+              <div className="empty">
+                <h3>No clients yet</h3>
+                <p>Add your first client to get started.</p>
+
+                <button onClick={() => setIsOpen(true)}>
+                  + Add your first client
+                </button>
+              </div>
+            ) : (
+              <div className="client-list">
+
+                <div className="client-row table-header">
+                  <span>Name</span>
+                  <span>Company</span>
+                  <span>Email</span>
+                  <span>Action</span>
+                </div>
+
+                {clients.map((client) => (
+                  <div className="client-row" key={client.id}>
+
+                    <span>{client.name}</span>
+                    <span>{client.company}</span>
+                    <span>{client.email}</span>
+
+                    <button
+                      className="delete-button"
+
+                    >
+                      Delete
+                    </button>
+
+                  </div>
+                ))}
+
+              </div>
+            )}
+
+          </div>
+
+        </section>
+      </main>
+
+      {/* ADD CLIENT MODAL */}
+      {isOpen && (
+        <div className="modal-overlay">
+
+          <div className="modal">
+
+            <div className="modal-header">
+              <h2>Add new client</h2>
+
+              <button
+                className="close-button"
+                onClick={() => setIsOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            <form onSubmit={addClient}>
+
+              <label>Client name</label>
+              <input
+                type="text"
+                placeholder="John Smith"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+
+              <label>Company</label>
+              <input
+                type="text"
+                placeholder="Company name"
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+                required
+              />
+
+              <label>Email</label>
+              <input
+                type="email"
+                placeholder="john@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+
+              <button className="submit-button" type="submit">
+                Add Client
+              </button>
+
+            </form>
+
+          </div>
+        </div>
+      )}
+
+    </div>
+  );
+}
+
+export default App;

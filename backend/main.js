@@ -1,6 +1,6 @@
 import cors from 'cors';
 require("reflect-metadata");
-
+import { authMiddleware } from './authMiddleware.js'
 
 const express = require("express");
 const { User } = require("./db/user.entity");
@@ -134,32 +134,7 @@ async function bootstrap() {
             });
         }
     });
-    app.post('/clients', async function (req,res){
-        try {
-            const clientRepository = myDataSource.getRepository(Client);
-
-            const { username } = req.body;
-
-            
-
-            const newClient = clientRepository.create({
-                username: username,
-                
-            });
-
-            const savedClient = await clientRepository.save(newClient);
-
-            res.json({ savedClient});
-
-        } catch (error) {
-            console.error(error);
-
-            res.status(500).json({
-                error: "Ошибка сервера"
-            });
-        }
-
-    })
+    
 
     app.listen(3000, function () {
         console.log("Server started on http://localhost:3000");
