@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 
+import { secretKey } from './config.js';
 
-const secretKey = 'secretPwd'
 export  function authMiddleware(req,res,next){
     const authHeader = req.headers.authorization
     if(!authHeader){
@@ -16,7 +16,11 @@ export  function authMiddleware(req,res,next){
         req.user = decoded
         next()
     }catch(err){
-        return res.status(401).json({err: 'invalid token '})
+        console.log("JWT ERROR:", err.message);
+
+    return res.status(401).json({
+        err: err.message
+    });
     }
 
 }

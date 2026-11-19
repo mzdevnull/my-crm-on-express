@@ -5,8 +5,14 @@ export class Client {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column("varchar", { unique: true })
-  username!: string;
+  @Column("varchar", )
+  name!: string;
+
+  @Column("varchar", )
+  company!: string;
+
+  @Column("varchar",)
+  email!: string;
 
   
 }

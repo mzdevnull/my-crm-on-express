@@ -28,12 +28,16 @@ function Login({ onLogin }: LoginProps) {
 
       const data = await response.json();
 
-      if (!response.ok) {
-        setResult(data.error || 'Ошибка регистрации');
-      } else {
-        setResult('User successfully registered!');
-        onLogin();
-      }
+     if (!response.ok) {
+  setResult(data.error || 'Ошибка входа');
+} else {
+  localStorage.setItem('token', data.token);
+
+  console.log('JWT saved:', localStorage.getItem('token'));
+
+  setResult('User successfully logged in!');
+  onLogin();
+}
     } catch (error) {
       setResult('Ошибка соединения с сервером');
     }

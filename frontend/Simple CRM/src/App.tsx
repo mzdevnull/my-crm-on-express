@@ -29,24 +29,75 @@ function App() {
   if (!isLoggedIn) {
     return <Login onLogin={() => setIsLoggedIn(true)} />;
   }
-  function addClient(e: React.FormEvent) {
-    e.preventDefault();
+    const API_URL = 'http://localhost:3000'
 
-    const newClient: Client = {
-      id: Date.now(),
-      name,
-      company,
-      email,
-    };
+async function addClient(e: React.FormEvent) {
+  e.preventDefault();
+  const token = localStorage.getItem("token");
+  try {
+    const body = { name, company, email };
+    const response = await fetch(`${API_URL}/clients`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+    });
 
-    setClients([...clients, newClient]);
+    const responseText = await response.text();   
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch {
+      console.error("[5] Server returned invalid JSON");
+      return;
+    }
+    if (!response.ok) {
+      console.error("[ERROR] Server error:", data);
+      return;
+    }
+
+    setClients((prev) => [...prev, data.savedClient]);
 
     setName("");
     setCompany("");
     setEmail("");
-
     setIsOpen(false);
+
+    
+
+  } catch (error) {
+    console.error("[FETCH ERROR]", error);
   }
+}
+
+async function deleteClient(clientId: number) {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch(`${API_URL}/clients/${clientId}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Delete error:", data);
+      return;
+    }
+
+    setClients((prev) =>
+      prev.filter((client) => client.id !== clientId)
+    );
+
+    console.log("Client deleted successfully!");
+  } catch (error) {
+    console.error("Fetch error:", error);
+  }
+}
 
   return (
     <div className="app">
@@ -167,6 +218,7 @@ function App() {
 
                     <button
                       className="delete-button"
+                      onClick={()=>deleteClient(client.id)}
 
                     >
                       Delete

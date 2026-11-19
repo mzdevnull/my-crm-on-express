@@ -1,7 +1,7 @@
 import cors from 'cors';
 require("reflect-metadata");
 import { authMiddleware } from './authMiddleware.js'
-
+import { secretKey } from './config.js';
 const express = require("express");
 const { User } = require("./db/user.entity");
 const { Client } = require("./db/clients.entity");
@@ -12,7 +12,7 @@ const jwt = require("jsonwebtoken");
 
 
 async function bootstrap() {
-    const secretKey = process.env.JWT_SECRET || "change-this-secret";
+
 
     try {
         await myDataSource.initialize();
@@ -33,7 +33,7 @@ async function bootstrap() {
         credentials: true,
     }));
 
-    
+
     app.get("/users", async function (req, res) {
         try {
             const users = await myDataSource.getRepository(User).find();
@@ -44,7 +44,7 @@ async function bootstrap() {
         }
     });
 
-   
+
     app.get("/users/:id", async function (req, res) {
         try {
             const user = await myDataSource.getRepository(User).findOneBy({
@@ -88,7 +88,7 @@ async function bootstrap() {
         }
     });
 
-    
+
     app.post("/login", async function (req, res) {
         try {
             const userRepository = myDataSource.getRepository(User);
@@ -134,7 +134,47 @@ async function bootstrap() {
             });
         }
     });
-    
+    app.post('/clients', authMiddleware, async function (req, res) {
+        try {
+            const clientRepository = myDataSource.getRepository(Client);
+            const { name, company, email } = req.body;
+
+            const newClient = clientRepository.create({
+                name,
+                company,
+                email
+            });
+            const savedClient = await clientRepository.save(newClient);
+            res.json({ savedClient });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({
+                error: "Ошибка сервера"
+            });
+        }
+
+    })
+    app.delete('/clients/:id', authMiddleware, async function (req, res) {
+        try {
+            
+            const clientRepository = myDataSource.getRepository(Client);
+            const deletedClient = await clientRepository.findOneBy({ id: Number(req.params.id) })
+            if (!deletedClient) {
+                return res.status(404).json({
+                    error: "Client not found"
+                });
+            }
+            await clientRepository.remove(deletedClient);
+            res.json({ deletedClient })
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({
+                error: "Ошибка сервера"
+            });
+        }
+
+    })
+
 
     app.listen(3000, function () {
         console.log("Server started on http://localhost:3000");
