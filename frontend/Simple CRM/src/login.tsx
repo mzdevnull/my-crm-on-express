@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './register.css';
+import './login.css';
 interface LoginProps {
   onLogin: () => void;
 }
@@ -45,22 +45,112 @@ function Login({ onLogin }: LoginProps) {
 
   return (
     <>
-      <div className="register-card">
-      <h1>Login Page</h1>
-      <input
-        placeholder="Username"
-        type="text"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <input
-        placeholder="Password"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button onClick={()=>handleLogin(username,password)}>Login</button>
-      <p className={`result-text ${status}`}>{result}</p>
+     <div className="login-page">
+
+      {/* Левая брендовая панель */}
+      <aside className="login-brand">
+        <div className="brand-logo">N</div>
+
+        <h2>NORTHSTAR CRM</h2>
+        <p className="brand-description">
+          Управляйте клиентами, проектами и командой
+          в одном рабочем пространстве.
+        </p>
+
+        <div className="brand-preview">
+          <div className="preview-header">
+            <span>Рабочее пространство</span>
+            <span className="online-dot"></span>
+          </div>
+
+          <div className="preview-stats">
+            <div>
+              <span>Клиенты</span>
+              <strong>128</strong>
+            </div>
+            <div>
+              <span>Проекты</span>
+              <strong>08</strong>
+            </div>
+          </div>
+        </div>
+
+        <span className="brand-footer">
+          © 2026 NORTHSTAR CRM
+        </span>
+      </aside>
+
+      {/* Правая часть */}
+      <main className="login-content">
+        <div className="login-card">
+
+          <div className="login-heading">
+            <span className="welcome-label">С ВОЗВРАЩЕНИЕМ</span>
+            <h1>Войти в аккаунт</h1>
+            <p>Введите свои данные для доступа к CRM.</p>
+          </div>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleLogin(username, password);
+            }}
+          >
+            <div className="form-group">
+              <label htmlFor="username">Рабочая почта</label>
+
+              <input
+                id="username"
+                type="text"
+                placeholder="name@company.com"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                autoComplete="username"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <div className="password-label">
+                <label htmlFor="password">Пароль</label>
+                <a href="#">Забыли пароль?</a>
+              </div>
+
+              <input
+                id="password"
+                type="password"
+                placeholder="Введите пароль"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                required
+              />
+            </div>
+
+            <div className="remember-me">
+              <input type="checkbox" id="remember" />
+              <label htmlFor="remember">Запомнить меня</label>
+            </div>
+
+            <button type="submit" className="login-button">
+              Войти в CRM
+              <span>→</span>
+            </button>
+          </form>
+
+          <p className={`result-text ${status}`}>
+            {result}
+          </p>
+
+          <div className="login-divider"></div>
+
+          <p className="login-help">
+            Нет доступа? Обратитесь к администратору.
+          </p>
+
+        </div>
+      </main>
+
     </div>
     </>
   );

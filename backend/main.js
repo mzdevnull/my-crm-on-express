@@ -156,7 +156,7 @@ async function bootstrap() {
     })
     app.delete('/clients/:id', authMiddleware, async function (req, res) {
         try {
-            
+
             const clientRepository = myDataSource.getRepository(Client);
             const deletedClient = await clientRepository.findOneBy({ id: Number(req.params.id) })
             if (!deletedClient) {
@@ -174,6 +174,33 @@ async function bootstrap() {
         }
 
     })
+    app.patch('/clients/:id', authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, company, email } = req.body;
+
+    const clientRepo = myDataSource.getRepository(Client);
+
+    const client = await clientRepo.findOneBy({
+      id: Number(id)
+    });
+
+    if (!client) {
+      return res.status(404).json({ message: 'Client not found' });
+    }
+
+    client.name = name;
+    client.company = company;
+    client.email = email;
+
+    const updatedClient = await clientRepo.save(client);
+
+    res.json(updatedClient);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
 
     app.listen(3000, function () {

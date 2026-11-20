@@ -41,25 +41,85 @@ function Register({ onSwitchToLogin }: RegisterProps) {
 
   return (
     <>
-      <div className="register-card">
-        <h1>Register Page</h1>
-        <input
-          placeholder="Username"
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <input
-          placeholder="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button onClick={() => handleRegister(username, password)}>Register</button>
-          <button type="button" onClick={onSwitchToLogin}>
-      Already have an account? Log In!
-    </button>
-      </div>
+      <div className="register-page">
+      <section className="register-brand">
+        <div className="brand-logo">N</div>
+
+        <div className="brand-content">
+          <span className="brand-label">NORTHSTAR CRM</span>
+
+          <h1>
+            Organize your work.
+            <br />
+            Grow your business.
+          </h1>
+
+          <p>
+            One workspace for your clients, projects,
+            deals and everyday tasks.
+          </p>
+        </div>
+
+        <div className="brand-footer">
+          © 2026 NORTHSTAR CRM
+        </div>
+      </section>
+
+      <main className="register-content">
+        <div className="register-card">
+          <div className="register-heading">
+            <span className="register-label">GET STARTED</span>
+            <h2>Create your account</h2>
+            <p>Fill in your details to get started with NORTHSTAR.</p>
+          </div>
+
+          <form >
+            <div className="register-field">
+              <label>Username</label>
+              <input
+                placeholder="Enter your username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="register-field">
+              <label>Password</label>
+              <input
+                placeholder="Create a password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <button className="register-submit" type="submit" onClick={() => handleRegister(username, password)}>
+              Create account
+              <span>→</span>
+            </button>
+          </form>
+
+          {result && (
+            <p className={`register-result ${status}`}>
+              {result}
+            </p>
+          )}
+
+          <div className="register-switch">
+            <span>Already have an account?</span>
+            <button type="button" onClick={onSwitchToLogin}>
+              Log in
+            </button>
+          </div>
+        </div>
+
+        <div className="register-bottom">
+          Secure workspace · NORTHSTAR CRM
+        </div>
+      </main>
+    </div>
     </>
   );
 }
