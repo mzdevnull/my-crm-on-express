@@ -77,7 +77,8 @@ async function bootstrap() {
 
             const savedUser = await userRepository.save(newUser);
 
-            res.json({ savedUser });
+            res.status(201).json({ username: savedUser.username });
+
 
         } catch (error) {
             console.error(error);
@@ -124,7 +125,7 @@ async function bootstrap() {
                 }
             );
 
-            res.json({ token });
+            res.json({ token,username: user.username});
 
         } catch (error) {
             console.error(error);

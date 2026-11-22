@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import './login.css';
+interface User {
+  username: string;
+}
+
 interface LoginProps {
-  onLogin: () => void;
+  onLogin: (user: User) => void;
 }
 function Login({ onLogin }: LoginProps) {
   const [username, setUsername] = useState('');
@@ -36,7 +40,7 @@ function Login({ onLogin }: LoginProps) {
   console.log('JWT saved:', localStorage.getItem('token'));
 
   setResult('User successfully logged in!');
-  onLogin();
+  onLogin({ username: data.username });
 }
     } catch (error) {
       setResult('Ошибка соединения с сервером');
@@ -49,6 +53,7 @@ function Login({ onLogin }: LoginProps) {
 
       {/* Левая брендовая панель */}
       <aside className="login-brand">
+
         <div className="brand-logo">N</div>
 
         <h2>NORTHSTAR CRM</h2>
@@ -138,9 +143,7 @@ function Login({ onLogin }: LoginProps) {
             </button>
           </form>
 
-          <p className={`result-text ${status}`}>
-            {result}
-          </p>
+          {result && <p className="result-text">{result}</p>}
 
           <div className="login-divider"></div>
 

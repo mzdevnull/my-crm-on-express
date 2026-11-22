@@ -2,12 +2,14 @@ import { useState } from 'react';
 import './register.css';
 
 interface RegisterProps {
-    onSwitchToLogin: () => void;
-  }
-function Register({ onSwitchToLogin }: RegisterProps) {
+  onSwitchToLogin: () => void;
+  onResult: (value: string) => void;
+}
+function Register({ onSwitchToLogin,onResult}: RegisterProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [result, setResult] = useState('');
+  
   const API_URL = 'http://localhost:3000'
   
 
@@ -28,6 +30,7 @@ function Register({ onSwitchToLogin }: RegisterProps) {
       });
 
       const data = await response.json();
+      onResult(data.username); 
 
       if (!response.ok) {
         setResult(data.error || 'Ошибка регистрации');

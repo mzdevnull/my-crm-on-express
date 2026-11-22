@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import Login from "./login";
+import Projects from "./Projects";
 interface Client {
   id: number;
   name: string;
   company: string;
   email: string;
+}
+interface User {
+  username: string;
 }
 
 function App() {
@@ -15,8 +19,8 @@ function App() {
   });
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-
+  const [user, setUser] = useState<User | null>(null);
+  const [currentPage, setCurrentPage] = useState<"dashboard" | "projects">("dashboard");
   const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
@@ -27,7 +31,12 @@ function App() {
     localStorage.setItem("clients", JSON.stringify(clients));
   }, [clients]);
   if (!isLoggedIn) {
-    return <Login onLogin={() => setIsLoggedIn(true)} />;
+    return <Login
+      onLogin={(userData) => {
+        setUser(userData);
+        setIsLoggedIn(true);
+      }}
+    />;
   }
   const API_URL = 'http://localhost:3000'
 
@@ -127,16 +136,16 @@ function App() {
     setIsEditOpen(false);
   }
   function changeClientData(clientId: number) {
-  const client = clients.find((c) => c.id === clientId);
+    const client = clients.find((c) => c.id === clientId);
 
-  if (!client) return;
+    if (!client) return;
 
-  setEditingClientId(clientId);
-  setName(client.name);
-  setCompany(client.company);
-  setEmail(client.email);
-  setIsEditOpen(true);
-}
+    setEditingClientId(clientId);
+    setName(client.name);
+    setCompany(client.company);
+    setEmail(client.email);
+    setIsEditOpen(true);
+  }
 
   return (
     <div className="dashboard">
@@ -162,7 +171,10 @@ function App() {
           <p className="sidebar-label">WORKSPACE</p>
 
           <nav className="sidebar-nav">
-            <div className="sidebar-link active">
+            <div
+              className={`sidebar-link ${currentPage === "dashboard" ? "active" : ""}`}
+              onClick={() => setCurrentPage("dashboard")}
+            >
               <span>▦</span>
               Dashboard
             </div>
@@ -172,7 +184,10 @@ function App() {
               Clients
             </div>
 
-            <div className="sidebar-link">
+            <div
+              className={`sidebar-link ${currentPage === "projects" ? "active" : ""}`}
+              onClick={() => setCurrentPage("projects")}
+            >
               <span>▣</span>
               Projects
             </div>
@@ -201,10 +216,10 @@ function App() {
         </div>
 
         <div className="sidebar-profile">
-          <div className="profile-avatar">A</div>
+          <div className="profile-avatar">{user?.username.charAt(0).toUpperCase()}</div>
 
           <div className="profile-info">
-            <strong>Alex Morgan</strong>
+            <strong>{user?.username}</strong>
             <small>Workspace admin</small>
           </div>
 
@@ -221,21 +236,22 @@ function App() {
         <header className="dashboard-header">
 
           <div className="breadcrumb">
-            Workspace <span>/</span> Dashboard
+            Workspace <span>/</span> {currentPage === "projects" ? "Projects" : "Dashboard"}
           </div>
 
           <div className="header-actions">
             <button className="notification-button">♧</button>
 
             <div className="header-user">
-              <div className="header-avatar">A</div>
-              <span>Alex Morgan</span>
+              <div className="header-avatar">{user?.username.charAt(0).toUpperCase()}</div>
+              <span>{user?.username}</span>
             </div>
 
             <button
               className="logout-button"
               onClick={() => {
                 setIsLoggedIn(false);
+                setUser(null);
                 localStorage.removeItem("token");
               }}
             >
@@ -247,6 +263,9 @@ function App() {
 
 
         {/* CONTENT */}
+        {currentPage === "projects" ? (
+          <Projects />
+        ) : (
         <section className="dashboard-content">
 
           {/* WELCOME */}
@@ -254,7 +273,7 @@ function App() {
 
             <div>
               <span className="welcome-label">OVERVIEW</span>
-              <h1>Good morning, Alex</h1>
+              <h1>Good morning, {user?.username}</h1>
               <p>Here's what's happening with your workspace today.</p>
             </div>
 
@@ -536,6 +555,7 @@ function App() {
           </div>
 
         </section>
+        )}
 
       </main>
 
