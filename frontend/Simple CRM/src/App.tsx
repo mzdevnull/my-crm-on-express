@@ -301,295 +301,295 @@ function App() {
         {currentPage === "projects" ? (
           <Projects />
         ) : currentPage === "clients" ? (
-        <section className="dashboard-content">
-
-          {/* WELCOME */}
-          <div className="dashboard-welcome">
-
-            <div>
-              <span className="welcome-label">OVERVIEW</span>
-              <h1>Good morning, {user?.username}</h1>
-              <p>Here's what's happening with your workspace today.</p>
-            </div>
-
-            <button
-              className="add-client-button"
-              onClick={() => setIsOpen(true)}
-            >
-              <span>+</span>
-              Add client
-            </button>
-
-          </div>
-
-
-          {/* STATISTICS */}
-          <div className="dashboard-stats">
-
-            <div className="dashboard-stat-card">
-
-              <div className="stat-top">
-                <span>Total clients</span>
-                <div className="stat-icon blue">♧</div>
-              </div>
-
-              <h2>{clients.length}</h2>
-
-              <p className="stat-description">
-                Clients in your workspace
-              </p>
-
-            </div>
-
-
-            <div className="dashboard-stat-card">
-
-              <div className="stat-top">
-                <span>Active clients</span>
-                <div className="stat-icon green">✓</div>
-              </div>
-
-              <h2>{clients.length}</h2>
-
-              <p className="stat-description">
-                Registered client records
-              </p>
-
-            </div>
-
-
-            <div className="dashboard-stat-card">
-
-              <div className="stat-top">
-                <span>Workspace status</span>
-                <div className="stat-icon purple">◈</div>
-              </div>
-
-              <h2 className="status-value">Active</h2>
-
-              <p className="stat-description">
-                Your workspace is running
-              </p>
-
-            </div>
-
-          </div>
-
-
-          {/* MAIN GRID */}
-          <div className="dashboard-grid">
-
-            {/* CLIENTS */}
-            <div className="dashboard-panel clients-panel">
-
-              <div className="panel-header">
-
-                <div>
-                  <h2>My clients</h2>
-                  <p>Manage your client relationships.</p>
-                </div>
-
-                <button
-                  className="view-all-button"
-                  onClick={() => setIsOpen(true)}
-                >
-                  + Add client
-                </button>
-
-              </div>
-
-
-              {clients.length === 0 ? (
-
-                <div className="clients-empty">
-
-                  <div className="empty-icon">♧</div>
-
-                  <h3>No clients yet</h3>
-
-                  <p>
-                    Your client list is empty.
-                    Add your first client to get started.
-                  </p>
-
-                  <button onClick={() => setIsOpen(true)}>
-                    + Add your first client
-                  </button>
-
-                </div>
-
-              ) : (
-
-                <div className="clients-table-wrapper">
-
-                  <table className="clients-table">
-
-                    <thead>
-                      <tr>
-                        <th>Client</th>
-                        <th>Company</th>
-                        <th>Email</th>
-                        <th>Action</th>
-                      </tr>
-                    </thead>
-
-                    <tbody>
-
-                      {clients.map((client) => (
-
-                        <tr key={client.id}>
-
-                          <td>
-                            <div className="client-name">
-                              <div className="client-avatar">
-                                {client.name?.charAt(0).toUpperCase()}
-                              </div>
-
-                              <strong>{client.name}</strong>
-                            </div>
-                          </td>
-
-                          <td>{client.company}</td>
-
-                          <td>{client.email}</td>
-
-                          <td>
-                            <button
-                              className="delete-button"
-                              onClick={() => deleteClient(client.id)}
-                            >
-                              Delete
-                            </button>
-                            <button onClick={() => changeClientData(client.id)}>
-                              Edit
-                            </button>
-
-
-                            {isEditOpen && (
-                              <div className="modal-overlay">
-                                <div className="client-modal">
-
-                                  <div className="modal-header">
-                                    <h2>Edit client</h2>
-
-                                    <button
-                                      type="button"
-                                      onClick={() => setIsEditOpen(false)}
-                                    >
-                                      ×
-                                    </button>
-                                  </div>
-
-                                  <form
-                                    onSubmit={(e) => {
-                                      e.preventDefault();
-
-                                      if (editingClientId !== null) {
-                                        updateClient(editingClientId);
-                                      }
-                                    }}
-                                  >
-                                    <label>Name</label>
-                                    <input
-                                      value={name}
-                                      onChange={(e) => setName(e.target.value)}
-                                      required
-                                    />
-
-                                    <label>Company</label>
-                                    <input
-                                      value={company}
-                                      onChange={(e) => setCompany(e.target.value)}
-                                      required
-                                    />
-
-                                    <label>Email</label>
-                                    <input
-                                      type="email"
-                                      value={email}
-                                      onChange={(e) => setEmail(e.target.value)}
-                                      required
-                                    />
-
-                                    <button type="submit" className="modal-submit">
-                                      Обновить
-                                    </button>
-
-                                    <button
-                                      type="button"
-                                      onClick={() => setIsEditOpen(false)}
-                                    >
-                                      Отмена
-                                    </button>
-                                  </form>
-
-                                </div>
-                              </div>
-                            )}
-                          </td>
-
-                        </tr>
-
-                      ))}
-
-                    </tbody>
-
-                  </table>
-
-                </div>
-
-              )}
-
-            </div>
-
-
-            {/* RIGHT PANEL */}
-            <div className="dashboard-panel overview-panel">
-
-              <div className="panel-header">
-                <div>
-                  <h2>Workspace overview</h2>
-                  <p>Your workspace at a glance.</p>
-                </div>
-              </div>
-
-              <div className="overview-item">
-                <div className="overview-item-icon blue">♧</div>
-
-                <div>
-                  <strong>Client management</strong>
-                  <p>Keep your contacts organized.</p>
-                </div>
-              </div>
-
-              <div className="overview-item">
-                <div className="overview-item-icon green">✓</div>
-
-                <div>
-                  <strong>Workspace ready</strong>
-                  <p>Your CRM is ready to use.</p>
-                </div>
-              </div>
-
-              <div className="overview-divider"></div>
-
-              <div className="overview-summary">
-                <span>Total client records</span>
-                <strong>{clients.length}</strong>
+          <section className="dashboard-content">
+
+            {/* WELCOME */}
+            <div className="dashboard-welcome">
+
+              <div>
+                <span className="welcome-label">OVERVIEW</span>
+                <h1>Good morning, {user?.username}</h1>
+                <p>Here's what's happening with your workspace today.</p>
               </div>
 
               <button
-                className="overview-add-button"
+                className="add-client-button"
                 onClick={() => setIsOpen(true)}
               >
-                Manage clients →
+                <span>+</span>
+                Add client
               </button>
 
             </div>
 
-          </div>
 
-        </section>
+            {/* STATISTICS */}
+            <div className="dashboard-stats">
+
+              <div className="dashboard-stat-card">
+
+                <div className="stat-top">
+                  <span>Total clients</span>
+                  <div className="stat-icon blue">♧</div>
+                </div>
+
+                <h2>{clients.length}</h2>
+
+                <p className="stat-description">
+                  Clients in your workspace
+                </p>
+
+              </div>
+
+
+              <div className="dashboard-stat-card">
+
+                <div className="stat-top">
+                  <span>Active clients</span>
+                  <div className="stat-icon green">✓</div>
+                </div>
+
+                <h2>{clients.length}</h2>
+
+                <p className="stat-description">
+                  Registered client records
+                </p>
+
+              </div>
+
+
+              <div className="dashboard-stat-card">
+
+                <div className="stat-top">
+                  <span>Workspace status</span>
+                  <div className="stat-icon purple">◈</div>
+                </div>
+
+                <h2 className="status-value">Active</h2>
+
+                <p className="stat-description">
+                  Your workspace is running
+                </p>
+
+              </div>
+
+            </div>
+
+
+            {/* MAIN GRID */}
+            <div className="dashboard-grid">
+
+              {/* CLIENTS */}
+              <div className="dashboard-panel clients-panel">
+
+                <div className="panel-header">
+
+                  <div>
+                    <h2>My clients</h2>
+                    <p>Manage your client relationships.</p>
+                  </div>
+
+                  <button
+                    className="view-all-button"
+                    onClick={() => setIsOpen(true)}
+                  >
+                    + Add client
+                  </button>
+
+                </div>
+
+
+                {clients.length === 0 ? (
+
+                  <div className="clients-empty">
+
+                    <div className="empty-icon">♧</div>
+
+                    <h3>No clients yet</h3>
+
+                    <p>
+                      Your client list is empty.
+                      Add your first client to get started.
+                    </p>
+
+                    <button onClick={() => setIsOpen(true)}>
+                      + Add your first client
+                    </button>
+
+                  </div>
+
+                ) : (
+
+                  <div className="clients-table-wrapper">
+
+                    <table className="clients-table">
+
+                      <thead>
+                        <tr>
+                          <th>Client</th>
+                          <th>Company</th>
+                          <th>Email</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+
+                        {clients.map((client) => (
+
+                          <tr key={client.id}>
+
+                            <td>
+                              <div className="client-name">
+                                <div className="client-avatar">
+                                  {client.name?.charAt(0).toUpperCase()}
+                                </div>
+
+                                <strong>{client.name}</strong>
+                              </div>
+                            </td>
+
+                            <td>{client.company}</td>
+
+                            <td>{client.email}</td>
+
+                            <td>
+                              <button
+                                className="delete-button"
+                                onClick={() => deleteClient(client.id)}
+                              >
+                                Delete
+                              </button>
+                              <button onClick={() => changeClientData(client.id)}>
+                                Edit
+                              </button>
+
+
+                              {isEditOpen && (
+                                <div className="modal-overlay">
+                                  <div className="client-modal">
+
+                                    <div className="modal-header">
+                                      <h2>Edit client</h2>
+
+                                      <button
+                                        type="button"
+                                        onClick={() => setIsEditOpen(false)}
+                                      >
+                                        ×
+                                      </button>
+                                    </div>
+
+                                    <form
+                                      onSubmit={(e) => {
+                                        e.preventDefault();
+
+                                        if (editingClientId !== null) {
+                                          updateClient(editingClientId);
+                                        }
+                                      }}
+                                    >
+                                      <label>Name</label>
+                                      <input
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        required
+                                      />
+
+                                      <label>Company</label>
+                                      <input
+                                        value={company}
+                                        onChange={(e) => setCompany(e.target.value)}
+                                        required
+                                      />
+
+                                      <label>Email</label>
+                                      <input
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        required
+                                      />
+
+                                      <button type="submit" className="modal-submit">
+                                        Обновить
+                                      </button>
+
+                                      <button
+                                        type="button"
+                                        onClick={() => setIsEditOpen(false)}
+                                      >
+                                        Отмена
+                                      </button>
+                                    </form>
+
+                                  </div>
+                                </div>
+                              )}
+                            </td>
+
+                          </tr>
+
+                        ))}
+
+                      </tbody>
+
+                    </table>
+
+                  </div>
+
+                )}
+
+              </div>
+
+
+              {/* RIGHT PANEL */}
+              <div className="dashboard-panel overview-panel">
+
+                <div className="panel-header">
+                  <div>
+                    <h2>Workspace overview</h2>
+                    <p>Your workspace at a glance.</p>
+                  </div>
+                </div>
+
+                <div className="overview-item">
+                  <div className="overview-item-icon blue">♧</div>
+
+                  <div>
+                    <strong>Client management</strong>
+                    <p>Keep your contacts organized.</p>
+                  </div>
+                </div>
+
+                <div className="overview-item">
+                  <div className="overview-item-icon green">✓</div>
+
+                  <div>
+                    <strong>Workspace ready</strong>
+                    <p>Your CRM is ready to use.</p>
+                  </div>
+                </div>
+
+                <div className="overview-divider"></div>
+
+                <div className="overview-summary">
+                  <span>Total client records</span>
+                  <strong>{clients.length}</strong>
+                </div>
+
+                <button
+                  className="overview-add-button"
+                  onClick={() => setIsOpen(true)}
+                >
+                  Manage clients →
+                </button>
+
+              </div>
+
+            </div>
+
+          </section>
         ) : null}
 
       </main>

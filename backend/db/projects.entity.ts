@@ -21,4 +21,7 @@ export class Projects {
 
   @Column({ type: "varchar" })
   due!: string;
+
+  @Column({ type: "integer", default: 0 })
+  progress!: number;
 }

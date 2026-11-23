@@ -217,8 +217,8 @@ async function bootstrap() {
     app.post('/projects', authMiddleware, async (req, res) => {
         try {
             const projectRepository = myDataSource.getRepository(Projects);
-            const { title, description, status, due } = req.body;
-            const newProject = projectRepository.create({ title, description, status, due });
+            const { title, description, status, due, progress } = req.body;
+            const newProject = projectRepository.create({ title, description, status, due, progress });
             const savedProject = await projectRepository.save(newProject);
             res.status(201).json({ savedProject });
         } catch (error) {
@@ -245,11 +245,12 @@ async function bootstrap() {
             const projectRepository = myDataSource.getRepository(Projects);
             const project = await projectRepository.findOneBy({ id: Number(req.params.id) });
             if (!project) return res.status(404).json({ error: "Project not found" });
-            const { title, description, status, due } = req.body;
+            const { title, description, status, due, progress } = req.body;
             project.title = title;
             project.description = description;
             project.status = status;
             project.due = due;
+            project.progress = progress;
             res.json(await projectRepository.save(project));
         } catch (error) {
             console.error(error);
