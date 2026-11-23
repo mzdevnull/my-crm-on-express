@@ -3,9 +3,14 @@ import './register.css';
 
 interface RegisterProps {
   onSwitchToLogin: () => void;
+  onLogin: (user: User) => void;
   onResult: (value: string) => void;
 }
-function Register({ onSwitchToLogin,onResult}: RegisterProps) {
+interface User {
+  username: string;
+}
+
+function Register({ onSwitchToLogin, onLogin, onResult }: RegisterProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [result, setResult] = useState('');
@@ -30,12 +35,26 @@ function Register({ onSwitchToLogin,onResult}: RegisterProps) {
       });
 
       const data = await response.json();
-      onResult(data.username); 
 
       if (!response.ok) {
         setResult(data.error || 'Ошибка регистрации');
       } else {
-        setResult('User successfully registered!');
+        onResult(data.username);
+
+        const loginResponse = await fetch(`${API_URL}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: user, password: pass }),
+        });
+        const loginData = await loginResponse.json();
+
+        if (!loginResponse.ok) {
+          setResult('Регистрация выполнена. Войдите в аккаунт.');
+          return;
+        }
+
+        localStorage.setItem('token', loginData.token);
+        onLogin({ username: loginData.username });
       }
     } catch (error) {
       setResult('Ошибка соединения с сервером');
@@ -76,7 +95,10 @@ function Register({ onSwitchToLogin,onResult}: RegisterProps) {
             <p>Fill in your details to get started with NORTHSTAR.</p>
           </div>
 
-          <form >
+          <form onSubmit={(event) => {
+            event.preventDefault();
+            handleRegister(username, password);
+          }}>
             <div className="register-field">
               <label>Username</label>
               <input
@@ -98,14 +120,14 @@ function Register({ onSwitchToLogin,onResult}: RegisterProps) {
                 required
               />
             </div>
-            <button className="register-submit" type="submit" onClick={() => handleRegister(username, password)}>
+            <button className="register-submit" type="submit">
               Create account
               <span>→</span>
             </button>
           </form>
 
           {result && (
-            <p className={`register-result ${status}`}>
+            <p className="register-result">
               {result}
             </p>
           )}

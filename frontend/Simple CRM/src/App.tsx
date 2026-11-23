@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import Login from "./login";
+import Register from "./register";
 import Projects from "./Projects";
 interface Client {
   id: number;
@@ -13,12 +14,10 @@ interface User {
 }
 
 function App() {
-  const [clients, setClients] = useState<Client[]>(() => {
-    const saved = localStorage.getItem("clients");
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [clients, setClients] = useState<Client[]>([]);
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [currentPage, setCurrentPage] = useState<"dashboard" | "projects">("dashboard");
   const [isOpen, setIsOpen] = useState(false);
@@ -28,15 +27,47 @@ function App() {
   const [editingClientId, setEditingClientId] = useState<number | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
   useEffect(() => {
-    localStorage.setItem("clients", JSON.stringify(clients));
-  }, [clients]);
+    if (!user) return;
+    localStorage.setItem(`clients_${user.username}`, JSON.stringify(clients));
+  }, [clients, user]);
+
+  function loginUser(userData: User) {
+    const storageKey = `clients_${userData.username}`;
+    let savedClients = localStorage.getItem(storageKey);
+
+    // Переносим старый общий список первому аккаунту.
+    if (!savedClients && userData.username === "hello") {
+      savedClients = localStorage.getItem("clients");
+      if (savedClients) localStorage.removeItem("clients");
+    }
+
+    setClients(savedClients ? JSON.parse(savedClients) : []);
+    setUser(userData);
+    setIsLoggedIn(true);
+  }
+
   if (!isLoggedIn) {
-    return <Login
-      onLogin={(userData) => {
-        setUser(userData);
-        setIsLoggedIn(true);
-      }}
-    />;
+    if (showRegister) {
+      return (
+        <Register
+          onSwitchToLogin={() => setShowRegister(false)}
+          onResult={() => undefined}
+          onLogin={(userData) => {
+            loginUser(userData);
+            setShowRegister(false);
+          }}
+        />
+      );
+    }
+
+    return (
+      <Login
+        onLogin={(userData) => {
+          loginUser(userData);
+        }}
+        onSwitchToRegister={() => setShowRegister(true)}
+      />
+    );
   }
   const API_URL = 'http://localhost:3000'
 
@@ -252,6 +283,7 @@ function App() {
               onClick={() => {
                 setIsLoggedIn(false);
                 setUser(null);
+                setClients([]);
                 localStorage.removeItem("token");
               }}
             >

@@ -5,6 +5,7 @@ import { secretKey } from './config.js';
 const express = require("express");
 const { User } = require("./db/user.entity");
 const { Client } = require("./db/clients.entity");
+const { Projects } = require("./db/projects.entity");
 const { myDataSource } = require("./db/app-data-source");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -125,7 +126,7 @@ async function bootstrap() {
                 }
             );
 
-            res.json({ token,username: user.username});
+            res.json({ token, username: user.username });
 
         } catch (error) {
             console.error(error);
@@ -176,32 +177,85 @@ async function bootstrap() {
 
     })
     app.patch('/clients/:id', authMiddleware, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { name, company, email } = req.body;
+        try {
+            const { id } = req.params;
+            const { name, company, email } = req.body;
 
-    const clientRepo = myDataSource.getRepository(Client);
+            const clientRepo = myDataSource.getRepository(Client);
 
-    const client = await clientRepo.findOneBy({
-      id: Number(id)
+            const client = await clientRepo.findOneBy({
+                id: Number(id)
+            });
+
+            if (!client) {
+                return res.status(404).json({ message: 'Client not found' });
+            }
+
+            client.name = name;
+            client.company = company;
+            client.email = email;
+
+            const updatedClient = await clientRepo.save(client);
+
+            res.json(updatedClient);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Server error' });
+        }
     });
 
-    if (!client) {
-      return res.status(404).json({ message: 'Client not found' });
-    }
+    app.get('/projects', authMiddleware, async (req, res) => {
+        try {
+            const projects = await myDataSource.getRepository(Projects).find();
+            res.json(projects);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: "Ошибка сервера" });
+        }
+    });
 
-    client.name = name;
-    client.company = company;
-    client.email = email;
+    app.post('/projects', authMiddleware, async (req, res) => {
+        try {
+            const projectRepository = myDataSource.getRepository(Projects);
+            const { title, description, status, due } = req.body;
+            const newProject = projectRepository.create({ title, description, status, due });
+            const savedProject = await projectRepository.save(newProject);
+            res.status(201).json({ savedProject });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: "Ошибка сервера" });
+        }
+    });
 
-    const updatedClient = await clientRepo.save(client);
+    app.delete('/projects/:id', authMiddleware, async (req, res) => {
+        try {
+            const projectRepository = myDataSource.getRepository(Projects);
+            const project = await projectRepository.findOneBy({ id: Number(req.params.id) });
+            if (!project) return res.status(404).json({ error: "Project not found" });
+            await projectRepository.remove(project);
+            res.json({ deletedProject: project });
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: "Ошибка сервера" });
+        }
+    });
 
-    res.json(updatedClient);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
-  }
-});
+    app.patch('/projects/:id', authMiddleware, async (req, res) => {
+        try {
+            const projectRepository = myDataSource.getRepository(Projects);
+            const project = await projectRepository.findOneBy({ id: Number(req.params.id) });
+            if (!project) return res.status(404).json({ error: "Project not found" });
+            const { title, description, status, due } = req.body;
+            project.title = title;
+            project.description = description;
+            project.status = status;
+            project.due = due;
+            res.json(await projectRepository.save(project));
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ error: "Ошибка сервера" });
+        }
+    });
 
 
     app.listen(3000, function () {

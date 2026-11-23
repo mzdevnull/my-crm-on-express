@@ -237,6 +237,30 @@
   font-size: 11px;
 }
 
+.login-register {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  margin-top: 18px;
+  color: #98a2b3;
+  font-size: 12px;
+}
+
+.login-register button {
+  padding: 0;
+  color: #5367e8;
+  background: none;
+  border: 0;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.login-register button:hover {
+  color: #4054d5;
+}
+
 /* Адаптивность */
 
 @media (max-width: 850px) {

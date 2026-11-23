@@ -6,8 +6,9 @@ interface User {
 
 interface LoginProps {
   onLogin: (user: User) => void;
+  onSwitchToRegister: () => void;
 }
-function Login({ onLogin }: LoginProps) {
+function Login({ onLogin, onSwitchToRegister }: LoginProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [result, setResult] = useState('');
@@ -150,6 +151,13 @@ function Login({ onLogin }: LoginProps) {
           <p className="login-help">
             Нет доступа? Обратитесь к администратору.
           </p>
+
+          <div className="login-register">
+            <span>Нет аккаунта?</span>
+            <button type="button" onClick={onSwitchToRegister}>
+              Создать аккаунт
+            </button>
+          </div>
 
         </div>
       </main>

@@ -1,219 +1,191 @@
-@import url('https://googleapis.com');
-
-:root {
-  --bg-main: #09090b;
-  --text-primary: #fafafa;
-  --text-secondary: #a1a1aa;
-  --accent-primary: #6366f1;
-  --error-color: #f43f5e;
-  --success-color: #10b981;
-}
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-}
-
-body {
+.register-page {
   min-height: 100vh;
   display: flex;
+  background: #f5f7fb;
+  color: #172033;
+  font-family: Inter, Arial, sans-serif;
+}
+
+.register-brand {
+  position: relative;
+  display: flex;
+  width: 42%;
+  min-height: 100vh;
+  flex-direction: column;
   justify-content: center;
+  padding: 55px 65px;
+  background: #fff;
+}
+
+.register-brand .brand-logo {
+  display: flex;
+  width: 48px;
+  height: 48px;
   align-items: center;
-  background-color: var(--bg-main);
-  background-image: 
-    radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.16) 0%, transparent 55%),
-    linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-  background-size: 100% 100%, 40px 40px, 40px 40px;
-  color: var(--text-primary);
-  -webkit-font-smoothing: antialiased;
+  justify-content: center;
+  margin-bottom: 25px;
+  color: #fff;
+  background: #5367e8;
+  border-radius: 13px;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.brand-label,
+.register-label {
+  color: #5367e8;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.register-brand h1 {
+  margin: 13px 0 15px;
+  color: #172033;
+  font-size: 31px;
+  line-height: 1.2;
+}
+
+.register-brand p {
+  max-width: 380px;
+  color: #697386;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.register-brand .brand-footer {
+  position: absolute;
+  bottom: 30px;
+  left: 65px;
+  color: #98a2b3;
+  font-size: 11px;
+}
+
+.register-content {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 100vh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
 }
 
 .register-card {
-  position: relative;
   width: 100%;
-  max-width: 410px;
-  padding: 3rem 2.5rem;
-  border-radius: 26px;
-  background: linear-gradient(
-    165deg,
-    rgba(30, 30, 36, 0.85) 0%,
-    rgba(16, 16, 20, 0.92) 100%
-  );
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  box-shadow: 
-    0 30px 60px -15px rgba(0, 0, 0, 0.85),
-    0 0 80px -20px rgba(99, 102, 241, 0.25),
-    inset 0 1px 1px 0 rgba(255, 255, 255, 0.15);
+  max-width: 420px;
+  padding: 40px;
+  background: #fff;
+  border: 1px solid #e7ebf3;
+  border-radius: 18px;
+  box-shadow: 0 12px 40px rgba(30, 45, 80, 0.05);
+}
+
+.register-heading h2 {
+  margin: 12px 0 8px;
+  color: #172033;
+  font-size: 27px;
+}
+
+.register-heading p {
+  margin: 0 0 30px;
+  color: #697386;
+  font-size: 13px;
+}
+
+.register-field {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  overflow: hidden;
-  animation: cardAppear 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  gap: 9px;
+  margin-bottom: 20px;
 }
 
-/* Верхний градиентный блик на рамке */
-.register-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 15%;
-  right: 15%;
-  height: 1.5px;
-  background: linear-gradient(90deg, transparent, #818cf8, #e879f9, #818cf8, transparent);
-}
-
-/* Мягкое внутреннее свечение в верхней части карточки */
-.register-card::after {
-  content: '';
-  position: absolute;
-  top: -60px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 240px;
-  height: 120px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.22) 0%, transparent 70%);
-  pointer-events: none;
-}
-
-.register-card h1 {
-  position: relative;
-  z-index: 1;
-  font-size: 1.8rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  text-align: center;
-  margin-bottom: 0.5rem;
-  background: linear-gradient(180deg, #ffffff 20%, #a1a1aa 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.register-card input {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  padding: 0.95rem 1.15rem;
-  font-size: 0.95rem;
-  color: var(--text-primary);
-  background: rgba(9, 9, 12, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  outline: none;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.45);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.register-card input::placeholder {
-  color: #52525b;
-  transition: color 0.2s ease;
-}
-
-.register-card input:hover {
-  border-color: rgba(255, 255, 255, 0.2);
-  background: rgba(12, 12, 16, 0.9);
-}
-
-.register-card input:hover::placeholder {
-  color: #71717a;
-}
-
-.register-card input:focus {
-  border-color: #818cf8;
-  background: #09090c;
-  box-shadow: 
-    inset 0 2px 4px rgba(0, 0, 0, 0.5),
-    0 0 0 4px rgba(99, 102, 241, 0.2),
-    0 0 20px rgba(99, 102, 241, 0.15);
-}
-
-.register-card button {
-  position: relative;
-  z-index: 1;
-  overflow: hidden;
-  margin-top: 0.6rem;
-  padding: 1rem;
-  font-size: 0.95rem;
+.register-field label {
+  color: #344054;
+  font-size: 13px;
   font-weight: 600;
-  letter-spacing: 0.015em;
-  color: #ffffff;
-  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 50%, #4338ca 100%);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 14px;
+}
+
+.register-field input {
+  width: 100%;
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid #e1e5ed;
+  border-radius: 9px;
+  outline: none;
+  color: #172033;
+  background: #fff;
+  font: inherit;
+  font-size: 13px;
+  transition: 0.2s;
+}
+
+.register-field input::placeholder { color: #a0a8b7; }
+.register-field input:focus { border-color: #5367e8; box-shadow: 0 0 0 3px rgba(83, 103, 232, 0.1); }
+
+.register-submit {
+  display: flex;
+  width: 100%;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 5px;
+  color: #fff;
+  background: #5367e8;
+  border: 0;
+  border-radius: 9px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: 
-    0 8px 20px -4px rgba(99, 102, 241, 0.45),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: 0.2s;
 }
 
-/* Пробегающий блик на кнопке при наведении */
-.register-card button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 60%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.25),
-    transparent
-  );
-  transform: skewX(-20deg);
-  transition: left 0.55s ease;
-}
+.register-submit:hover { background: #4054d5; }
 
-.register-card button:hover {
-  transform: translateY(-2px);
-  box-shadow: 
-    0 12px 28px -4px rgba(99, 102, 241, 0.65),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.35);
-}
-
-.register-card button:hover::before {
-  left: 150%;
-}
-
-.register-card button:active {
-  transform: translateY(0);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
-}
-
-.result-text {
-  position: relative;
-  z-index: 1;
-  min-height: 1.4rem;
-  font-size: 0.875rem;
-  font-weight: 500;
+.register-result {
+  min-height: 18px;
+  margin: 15px 0 0;
+  color: #5367e8;
+  font-size: 13px;
   text-align: center;
-  margin-top: 0.2rem;
-  transition: all 0.2s ease;
 }
 
-.result-text.error {
-  color: var(--error-color);
-  text-shadow: 0 0 14px rgba(244, 63, 94, 0.35);
+.register-switch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 24px;
+  color: #98a2b3;
+  font-size: 12px;
 }
 
-.result-text.success {
-  color: var(--success-color);
-  text-shadow: 0 0 14px rgba(16, 185, 129, 0.35);
+.register-switch button {
+  padding: 0;
+  color: #5367e8;
+  background: none;
+  border: 0;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
 }
 
-@keyframes cardAppear {
-  from {
-    opacity: 0;
-    transform: translateY(18px) scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+.register-switch button:hover { color: #4054d5; }
+
+.register-bottom {
+  margin-top: 22px;
+  color: #98a2b3;
+  font-size: 11px;
+}
+
+@media (max-width: 850px) {
+  .register-brand { display: none; }
+  .register-content { padding: 20px; }
+}
+
+@media (max-width: 480px) {
+  .register-card { padding: 28px 20px; }
 }
