@@ -19,7 +19,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-  const [currentPage, setCurrentPage] = useState<"dashboard" | "projects">("dashboard");
+  const [currentPage, setCurrentPage] = useState<"dashboard" | "clients" | "projects">("dashboard");
   const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
@@ -210,7 +210,10 @@ function App() {
               Dashboard
             </div>
 
-            <div className="sidebar-link">
+            <div
+              className={`sidebar-link ${currentPage === "clients" ? "active" : ""}`}
+              onClick={() => setCurrentPage("clients")}
+            >
               <span>♧</span>
               Clients
             </div>
@@ -267,7 +270,7 @@ function App() {
         <header className="dashboard-header">
 
           <div className="breadcrumb">
-            Workspace <span>/</span> {currentPage === "projects" ? "Projects" : "Dashboard"}
+            Workspace <span>/</span> {currentPage === "projects" ? "Projects" : currentPage === "clients" ? "Clients" : "Dashboard"}
           </div>
 
           <div className="header-actions">
@@ -297,7 +300,7 @@ function App() {
         {/* CONTENT */}
         {currentPage === "projects" ? (
           <Projects />
-        ) : (
+        ) : currentPage === "clients" ? (
         <section className="dashboard-content">
 
           {/* WELCOME */}
@@ -587,7 +590,7 @@ function App() {
           </div>
 
         </section>
-        )}
+        ) : null}
 
       </main>
 

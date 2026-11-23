@@ -18,6 +18,8 @@ const statusClass: Record<Project["status"], string> = {
 
 function Projects() {
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [editingProjectId, setEditingProjectId] = useState<number | null>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [title, setTitle] = useState("");
@@ -109,6 +111,47 @@ function Projects() {
       if (selectedProject?.id === projectId) setSelectedProject(null);
     } catch (error) {
       console.error("Ошибка запроса при удалении проекта:", error);
+    }
+  }
+
+  function changeProjectData(projectId: number) {
+    const project = projects.find((item) => item.id === projectId);
+    if (!project) return;
+    setEditingProjectId(projectId);
+    setTitle(project.title);
+    setDescription(project.description);
+    setStatus(project.status);
+    setDue(project.due || "");
+    setSelectedProject(null);
+    setIsEditOpen(true);
+  }
+
+  async function updateProject(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (editingProjectId === null) return;
+
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(`${API_URL}/projects/${editingProjectId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ title, description, status, due }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        console.error("Ошибка обновления проекта:", data);
+        return;
+      }
+      setProjects((current) =>
+        current.map((project) => project.id === editingProjectId ? data : project),
+      );
+      setIsEditOpen(false);
+      setEditingProjectId(null);
+    } catch (error) {
+      console.error("Ошибка запроса при обновлении проекта:", error);
     }
   }
 
@@ -351,10 +394,49 @@ function Projects() {
             <button
               className="modal-submit"
               type="button"
-              onClick={() => setSelectedProject(null)}
+              onClick={() => changeProjectData(selectedProject.id)}
             >
+              Edit project
+            </button>
+            <button className="modal-submit" type="button" onClick={() => setSelectedProject(null)}>
               Close
             </button>
+          </div>
+        </div>
+      )}
+
+      {isEditOpen && (
+        <div className="modal-overlay" onClick={() => setIsEditOpen(false)}>
+          <div className="client-modal project-modal" onClick={(event) => event.stopPropagation()}>
+            <div className="modal-header">
+              <div>
+                <h2>Edit project</h2>
+                <p>Update project details.</p>
+              </div>
+              <button className="close-button" type="button" onClick={() => setIsEditOpen(false)}>×</button>
+            </div>
+            <form onSubmit={updateProject}>
+              <label htmlFor="edit-project-title">Project name</label>
+              <input id="edit-project-title" value={title} onChange={(event) => setTitle(event.target.value)} required />
+              <label htmlFor="edit-project-description">Description</label>
+              <textarea id="edit-project-description" rows={3} value={description} onChange={(event) => setDescription(event.target.value)} />
+              <div className="project-form-row">
+                <div>
+                  <label htmlFor="edit-project-status">Status</label>
+                  <select id="edit-project-status" value={status} onChange={(event) => setStatus(event.target.value as Project["status"])}>
+                    <option>Planning</option>
+                    <option>In progress</option>
+                    <option>Review</option>
+                    <option>Completed</option>
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="edit-project-due">Due date</label>
+                  <input id="edit-project-due" type="date" value={due} onChange={(event) => setDue(event.target.value)} />
+                </div>
+              </div>
+              <button className="modal-submit" type="submit">Save changes</button>
+            </form>
           </div>
         </div>
       )}
