@@ -379,6 +379,10 @@ button {
   gap: 20px;
 }
 
+.dashboard-grid.clients-only-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .dashboard-panel {
   background: white;
   border: 1px solid #edf0f4;
@@ -758,4 +762,17 @@ button {
   .dashboard-panel {
     padding: 18px;
   }
+}
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.page-transition {
+  min-width: 0;
+  animation: page-enter 240ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-transition { animation: none; }
 }

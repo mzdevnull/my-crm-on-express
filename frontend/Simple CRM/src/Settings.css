@@ -1,0 +1,127 @@
+.settings-page {
+  min-height: calc(100vh - 75px);
+  padding: 38px 40px;
+  background: #f6f7fb;
+}
+
+.settings-heading {
+  margin-bottom: 25px;
+}
+
+.settings-heading h1 {
+  margin: 0 0 7px;
+  color: #20283a;
+  font-size: 27px;
+  letter-spacing: -0.6px;
+}
+
+.settings-heading p,
+.settings-section-heading p {
+  margin: 0;
+  color: #8992a3;
+  font-size: 13px;
+}
+
+.settings-form {
+  max-width: 1060px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #e9ecf2;
+  border-radius: 12px;
+}
+
+.settings-section {
+  padding: 26px 30px 30px;
+  border-bottom: 1px solid #edf0f4;
+}
+
+.settings-section-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  margin-bottom: 23px;
+}
+
+.settings-section-icon {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  place-items: center;
+  border-radius: 9px;
+  background: #f1f3ff;
+  font-size: 16px;
+}
+
+.settings-section-heading h2 {
+  margin: 0 0 6px;
+  color: #20283a;
+  font-size: 17px;
+}
+
+.settings-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 22px;
+  padding-left: 49px;
+}
+
+.settings-field {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+  color: #667085;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.55px;
+  text-transform: uppercase;
+}
+
+.settings-field input,
+.settings-field select,
+.settings-field textarea {
+  width: 100%;
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid #e2e6ed;
+  border-radius: 7px;
+  outline: none;
+  background: #fff;
+  color: #344054;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.settings-field textarea {
+  resize: vertical;
+}
+
+.settings-field input:focus,
+.settings-field select:focus,
+.settings-field textarea:focus {
+  border-color: #7181ed;
+  box-shadow: 0 0 0 3px rgba(83, 103, 232, 0.1);
+}
+
+.settings-field input[readonly] {
+  background: #f8f9fb;
+  color: #7b8495;
+}
+
+.settings-avatar-field {
+  text-transform: none;
+}
+
+.settings-avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  color: #8992a3;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: normal;
+}

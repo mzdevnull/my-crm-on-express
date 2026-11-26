@@ -67,12 +67,21 @@ async function bootstrap() {
         try {
             const userRepository = myDataSource.getRepository(User);
 
-            const { username, password } = req.body;
+            const { username, email, password } = req.body;
+
+            const normalizedEmail = email ? String(email).trim().toLowerCase() : null;
+            if (normalizedEmail) {
+                const existingEmail = await userRepository.findOneBy({ email: normalizedEmail });
+                if (existingEmail) {
+                    return res.status(409).json({ error: "Эта почта уже зарегистрирована" });
+                }
+            }
 
             const passwordHash = await bcrypt.hash(password, 10);
 
             const newUser = userRepository.create({
                 username: username,
+                email: normalizedEmail,
                 password: passwordHash
             });
 
@@ -95,11 +104,9 @@ async function bootstrap() {
         try {
             const userRepository = myDataSource.getRepository(User);
 
-            const { username, password } = req.body;
-
-            const user = await userRepository.findOneBy({
-                username: username
-            });
+            const { username, email, password } = req.body;
+            const normalizedEmail = String(email || "").trim().toLowerCase();
+            const user = await userRepository.findOneBy({ username });
 
             if (!user) {
                 return res.status(401).json({
@@ -115,6 +122,12 @@ async function bootstrap() {
                 });
             }
 
+            if (user.email && user.email.toLowerCase() !== normalizedEmail) {
+                return res.status(401).json({
+                    error: "Почта не совпадает с аккаунтом"
+                });
+            }
+
             const token = jwt.sign(
                 {
                     id: user.id,
@@ -126,7 +139,7 @@ async function bootstrap() {
                 }
             );
 
-            res.json({ token, username: user.username });
+            res.json({ token, username: user.username, email: user.email });
 
         } catch (error) {
             console.error(error);
@@ -144,7 +157,8 @@ async function bootstrap() {
             const newClient = clientRepository.create({
                 name,
                 company,
-                email
+                email,
+                userId: req.user.id
             });
             const savedClient = await clientRepository.save(newClient);
             res.json({ savedClient });
@@ -160,7 +174,9 @@ async function bootstrap() {
         try {
 
             const clientRepository = myDataSource.getRepository(Client);
-            const deletedClient = await clientRepository.findOneBy({ id: Number(req.params.id) })
+            const deletedClient = await clientRepository.findOne({
+                where: { id: Number(req.params.id), userId: req.user.id }
+            });
             if (!deletedClient) {
                 return res.status(404).json({
                     error: "Client not found"
@@ -183,8 +199,8 @@ async function bootstrap() {
 
             const clientRepo = myDataSource.getRepository(Client);
 
-            const client = await clientRepo.findOneBy({
-                id: Number(id)
+            const client = await clientRepo.findOne({
+                where: { id: Number(req.params.id), userId: req.user.id }
             });
 
             if (!client) {
@@ -206,7 +222,9 @@ async function bootstrap() {
 
     app.get('/projects', authMiddleware, async (req, res) => {
         try {
-            const projects = await myDataSource.getRepository(Projects).find();
+            const projects = await myDataSource.getRepository(Projects).find({
+                where: { userId: req.user.id }
+            });
             res.json(projects);
         } catch (error) {
             console.error(error);
@@ -217,8 +235,16 @@ async function bootstrap() {
     app.post('/projects', authMiddleware, async (req, res) => {
         try {
             const projectRepository = myDataSource.getRepository(Projects);
-            const { title, description, status, due, progress } = req.body;
-            const newProject = projectRepository.create({ title, description, status, due, progress });
+            const { title, description, status, due, progress,client } = req.body;
+            const newProject = projectRepository.create({
+                title,
+                description,
+                status,
+                due,
+                progress,
+                client,
+                userId: req.user.id
+            });
             const savedProject = await projectRepository.save(newProject);
             res.status(201).json({ savedProject });
         } catch (error) {
@@ -230,7 +256,9 @@ async function bootstrap() {
     app.delete('/projects/:id', authMiddleware, async (req, res) => {
         try {
             const projectRepository = myDataSource.getRepository(Projects);
-            const project = await projectRepository.findOneBy({ id: Number(req.params.id) });
+            const project = await projectRepository.findOne({
+                where: { id: Number(req.params.id), userId: req.user.id }
+            });
             if (!project) return res.status(404).json({ error: "Project not found" });
             await projectRepository.remove(project);
             res.json({ deletedProject: project });
@@ -243,14 +271,17 @@ async function bootstrap() {
     app.patch('/projects/:id', authMiddleware, async (req, res) => {
         try {
             const projectRepository = myDataSource.getRepository(Projects);
-            const project = await projectRepository.findOneBy({ id: Number(req.params.id) });
+            const project = await projectRepository.findOne({
+                where: { id: Number(req.params.id), userId: req.user.id }
+            });
             if (!project) return res.status(404).json({ error: "Project not found" });
-            const { title, description, status, due, progress } = req.body;
+            const { title, description, status, due, progress,client } = req.body;
             project.title = title;
             project.description = description;
             project.status = status;
             project.due = due;
             project.progress = progress;
+            project.client = client
             res.json(await projectRepository.save(project));
         } catch (error) {
             console.error(error);

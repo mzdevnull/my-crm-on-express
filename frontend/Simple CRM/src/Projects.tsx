@@ -28,6 +28,7 @@ function Projects() {
   const [due, setDue] = useState("");
   const [progress, setProgress] = useState(0);
   const [statusFilter, setStatusFilter] = useState("All statuses");
+  const [client, setClient] = useState('')
   const API_URL = "http://localhost:3000";
 
   useEffect(() => {
@@ -70,6 +71,7 @@ function Projects() {
           status,
           due,
           progress,
+          client
         }),
       });
 
@@ -149,7 +151,7 @@ function Projects() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ title, description, status, due, progress }),
+        body: JSON.stringify({ title, description, status, due, progress,client }),
       });
       const data = await response.json();
       if (!response.ok) {

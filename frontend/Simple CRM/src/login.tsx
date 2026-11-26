@@ -2,6 +2,7 @@ import { useState } from 'react';
 import './login.css';
 interface User {
   username: string;
+  email: string
 }
 
 interface LoginProps {
@@ -10,13 +11,14 @@ interface LoginProps {
 }
 function Login({ onLogin, onSwitchToRegister }: LoginProps) {
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [result, setResult] = useState('');
   const API_URL = 'http://localhost:3000'
   
 
-  const handleLogin = async (user: string, pass: string) => {
-    if (!user || !pass) {
+  const handleLogin = async (user: string, emailAddress: string, pass: string) => {
+    if (!user || !emailAddress || !pass) {
       setResult('Пожалуйста, заполните все поля');
       return;
     }
@@ -26,7 +28,8 @@ function Login({ onLogin, onSwitchToRegister }: LoginProps) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          username: user,
+          username: user.trim(),
+          email: emailAddress.trim(),
           password: pass,
         }),
       });
@@ -38,10 +41,8 @@ function Login({ onLogin, onSwitchToRegister }: LoginProps) {
 } else {
   localStorage.setItem('token', data.token);
 
-  console.log('JWT saved:', localStorage.getItem('token'));
-
   setResult('User successfully logged in!');
-  onLogin({ username: data.username });
+  onLogin({ username: data.username, email: emailAddress.trim() });
 }
     } catch (error) {
       setResult('Ошибка соединения с сервером');
@@ -99,19 +100,32 @@ function Login({ onLogin, onSwitchToRegister }: LoginProps) {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              handleLogin(username, password);
+              handleLogin(username, email, password);
             }}
           >
             <div className="form-group">
-              <label htmlFor="username">Рабочая почта</label>
+              <label htmlFor="login-username">Username</label>
 
               <input
-                id="username"
+                id="login-username"
                 type="text"
-                placeholder="name@company.com"
+                placeholder="Enter your username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 autoComplete="username"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="login-email">Email</label>
+              <input
+                id="login-email"
+                type="email"
+                placeholder="name@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
                 required
               />
             </div>

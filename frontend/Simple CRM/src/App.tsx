@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./App.css";
 import Login from "./login";
 import Register from "./register";
 import Projects from "./Projects";
+import Tasks from "./Tasks";
+import Settings from "./Settings";
 interface Client {
   id: number;
   name: string;
@@ -11,37 +13,24 @@ interface Client {
 }
 interface User {
   username: string;
+  email?: string;
 }
 
 function App() {
   const [clients, setClients] = useState<Client[]>([]);
-
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-  const [currentPage, setCurrentPage] = useState<"dashboard" | "clients" | "projects">("dashboard");
+  const [currentPage, setCurrentPage] = useState<"dashboard" | "clients" | "projects" | "tasks" | "settings">("dashboard");
   const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
   const [email, setEmail] = useState("");
   const [editingClientId, setEditingClientId] = useState<number | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
-  useEffect(() => {
-    if (!user) return;
-    localStorage.setItem(`clients_${user.username}`, JSON.stringify(clients));
-  }, [clients, user]);
-
   function loginUser(userData: User) {
-    const storageKey = `clients_${userData.username}`;
-    let savedClients = localStorage.getItem(storageKey);
-
-    // Переносим старый общий список первому аккаунту.
-    if (!savedClients && userData.username === "hello") {
-      savedClients = localStorage.getItem("clients");
-      if (savedClients) localStorage.removeItem("clients");
-    }
-
-    setClients(savedClients ? JSON.parse(savedClients) : []);
+    localStorage.setItem("username", userData.username);
+    localStorage.setItem("email", userData.email ?? "");
     setUser(userData);
     setIsLoggedIn(true);
   }
@@ -226,7 +215,10 @@ function App() {
               Projects
             </div>
 
-            <div className="sidebar-link">
+            <div
+              className={`sidebar-link ${currentPage === "tasks" ? "active" : ""}`}
+              onClick={() => setCurrentPage("tasks")}
+            >
               <span>✓</span>
               Tasks
             </div>
@@ -242,7 +234,10 @@ function App() {
           <p className="sidebar-label">PREFERENCES</p>
 
           <nav className="sidebar-nav">
-            <div className="sidebar-link">
+            <div
+              className={`sidebar-link ${currentPage === "settings" ? "active" : ""}`}
+              onClick={() => setCurrentPage("settings")}
+            >
               <span>⚙</span>
               Settings
             </div>
@@ -270,7 +265,7 @@ function App() {
         <header className="dashboard-header">
 
           <div className="breadcrumb">
-            Workspace <span>/</span> {currentPage === "projects" ? "Projects" : currentPage === "clients" ? "Clients" : "Dashboard"}
+            Workspace <span>/</span> {currentPage === "projects" ? "Projects" : currentPage === "clients" ? "Clients" : currentPage === "tasks" ? "Tasks" : "Dashboard"}
           </div>
 
           <div className="header-actions">
@@ -288,6 +283,8 @@ function App() {
                 setUser(null);
                 setClients([]);
                 localStorage.removeItem("token");
+                localStorage.removeItem("email");
+                localStorage.removeItem("username");
               }}
             >
               Logout
@@ -298,18 +295,23 @@ function App() {
 
 
         {/* CONTENT */}
+        <div key={currentPage} className="page-transition">
         {currentPage === "projects" ? (
           <Projects />
-        ) : currentPage === "clients" ? (
+        ) : currentPage === "tasks" ? (
+          <Tasks />
+        ) : currentPage === "settings" ? (
+          <Settings />
+        ) : currentPage === "clients" || currentPage === "dashboard" ? (
           <section className="dashboard-content">
 
             {/* WELCOME */}
             <div className="dashboard-welcome">
 
               <div>
-                <span className="welcome-label">OVERVIEW</span>
-                <h1>Good morning, {user?.username}</h1>
-                <p>Here's what's happening with your workspace today.</p>
+                <span className="welcome-label">{currentPage === "dashboard" ? "OVERVIEW" : "CLIENT MANAGEMENT"}</span>
+                <h1>{currentPage === "dashboard" ? `Good morning, ${user?.username}` : "Clients"}</h1>
+                <p>{currentPage === "dashboard" ? "Here's what's happening with your workspace today." : "Manage your client relationships."}</p>
               </div>
 
               <button
@@ -324,7 +326,7 @@ function App() {
 
 
             {/* STATISTICS */}
-            <div className="dashboard-stats">
+            {currentPage === "dashboard" && <div className="dashboard-stats">
 
               <div className="dashboard-stat-card">
 
@@ -373,13 +375,14 @@ function App() {
 
               </div>
 
-            </div>
+            </div>}
 
 
             {/* MAIN GRID */}
-            <div className="dashboard-grid">
+            <div className={`dashboard-grid ${currentPage === "clients" ? "clients-only-grid" : ""}`}>
 
               {/* CLIENTS */}
+              {currentPage === "clients" && (
               <div className="dashboard-panel clients-panel">
 
                 <div className="panel-header">
@@ -541,9 +544,11 @@ function App() {
                 )}
 
               </div>
+              )}
 
 
               {/* RIGHT PANEL */}
+              {currentPage === "dashboard" && (
               <div className="dashboard-panel overview-panel">
 
                 <div className="panel-header">
@@ -580,17 +585,19 @@ function App() {
 
                 <button
                   className="overview-add-button"
-                  onClick={() => setIsOpen(true)}
+                  onClick={() => setCurrentPage("clients")}
                 >
-                  Manage clients →
+                  Open clients →
                 </button>
 
               </div>
+              )}
 
             </div>
 
           </section>
         ) : null}
+        </div>
 
       </main>
 

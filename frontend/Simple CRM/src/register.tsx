@@ -8,18 +8,20 @@ interface RegisterProps {
 }
 interface User {
   username: string;
+  email?: string;
 }
 
 function Register({ onSwitchToLogin, onLogin, onResult }: RegisterProps) {
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [result, setResult] = useState('');
   
   const API_URL = 'http://localhost:3000'
   
 
-  const handleRegister = async (user: string, pass: string) => {
-    if (!user || !pass) {
+  const handleRegister = async (user: string, emailAddress: string, pass: string) => {
+    if (!user || !emailAddress || !pass) {
       setResult('Пожалуйста, заполните все поля');
       return;
     }
@@ -30,6 +32,7 @@ function Register({ onSwitchToLogin, onLogin, onResult }: RegisterProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           username: user,
+          email: emailAddress.trim(),
           password: pass,
         }),
       });
@@ -44,7 +47,7 @@ function Register({ onSwitchToLogin, onLogin, onResult }: RegisterProps) {
         const loginResponse = await fetch(`${API_URL}/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: user, password: pass }),
+          body: JSON.stringify({ username: user.trim(), email: emailAddress.trim(), password: pass }),
         });
         const loginData = await loginResponse.json();
 
@@ -54,7 +57,7 @@ function Register({ onSwitchToLogin, onLogin, onResult }: RegisterProps) {
         }
 
         localStorage.setItem('token', loginData.token);
-        onLogin({ username: loginData.username });
+        onLogin({ username: loginData.username, email: loginData.email ?? emailAddress.trim() });
       }
     } catch (error) {
       setResult('Ошибка соединения с сервером');
@@ -97,8 +100,21 @@ function Register({ onSwitchToLogin, onLogin, onResult }: RegisterProps) {
 
           <form onSubmit={(event) => {
             event.preventDefault();
-            handleRegister(username, password);
+            handleRegister(username, email, password);
           }}>
+            <div className="register-field">
+              <label htmlFor="register-email">Email</label>
+              <input
+                id="register-email"
+                type="email"
+                placeholder="name@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+                required
+              />
+            </div>
+
             <div className="register-field">
               <label>Username</label>
               <input

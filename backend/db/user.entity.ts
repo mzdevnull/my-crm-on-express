@@ -8,6 +8,9 @@ export class User {
   @Column("varchar", { unique: true })
   username!: string;
 
+  @Column("varchar", { unique: true, nullable: true })
+  email!: string | null;
+
   @Column("varchar")
   password!: string;
 }
